@@ -13,11 +13,11 @@ if (-not (Test-Path $exePath)) {
 }
 
 $WshShell = New-Object -ComObject WScript.Shell
-$shortcutPath = "$([Environment]::GetFolderPath('Startup'))\ClaudeGatewayTray.lnk"
+$shortcutPath = "$([Environment]::GetFolderPath('Startup'))\taskbar-claude-status.lnk"
 $Shortcut = $WshShell.CreateShortcut($shortcutPath)
 $Shortcut.TargetPath = $exePath
 $Shortcut.WorkingDirectory = $PSScriptRoot
-$Shortcut.Description = "Claude Gateway Status Tray"
+$Shortcut.Description = "taskbar-claude-status"
 $Shortcut.Save()
 
 Write-Output "Shortcut dibuat di: $shortcutPath"

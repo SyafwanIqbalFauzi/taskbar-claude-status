@@ -13,10 +13,10 @@ Invoke-ps2exe `
     -inputFile (Join-Path $PSScriptRoot "claude-gateway-tray.ps1") `
     -outputFile (Join-Path $PSScriptRoot "taskbar-claude-status.exe") `
     -noConsole -STA `
-    -title "Claude Gateway Status" `
+    -title "taskbar-claude-status" `
     -description "Claude Code gateway status indicator (Kantor/Personal)" `
     -company "Syafwan" `
-    -product "Claude Gateway Status Tray" `
+    -product "taskbar-claude-status" `
     -version "1.0.0.0"
 
 Write-Output "Build selesai: $(Join-Path $PSScriptRoot 'taskbar-claude-status.exe')"
