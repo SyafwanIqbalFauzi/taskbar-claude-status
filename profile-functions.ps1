@@ -13,7 +13,7 @@ function claude-switch-profile {
     $settings = Get-Content $settingsPath -Raw | ConvertFrom-Json
     $settings | Add-Member -NotePropertyName env -NotePropertyValue $activeEnv -Force
 
-    $settings | ConvertTo-Json -Depth 20 | Set-Content -Path $settingsPath -Encoding utf8
+    $settings | ConvertTo-Json -Depth 20 | Set-Content -Path $settingsPath -Encoding utf8NoBOM
 
     # Juga di-mirror ke sesi terminal aktif supaya `claude` langsung memakainya tanpa restart
     "ANTHROPIC_BASE_URL","ANTHROPIC_AUTH_TOKEN","CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY" | ForEach-Object {
@@ -23,7 +23,7 @@ function claude-switch-profile {
         Set-Item "Env:$($prop.Name)" $prop.Value
     }
 
-    Set-Content -Path "$HOME\.claude\gateway-status.txt" -Value $Profile -Encoding utf8 -NoNewline
+    Set-Content -Path "$HOME\.claude\gateway-status.txt" -Value $Profile -Encoding utf8NoBOM -NoNewline
 
     if ($Profile -eq "kantor") {
         Write-Host "Claude Code -> KANTOR gateway (GANTI_DENGAN_URL_GATEWAY_ANDA) [settings.json diperbarui]" -ForegroundColor Yellow

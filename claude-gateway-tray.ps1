@@ -20,9 +20,9 @@ function Set-ActiveProfile([string]$Profile) {
 
     $settings = Get-Content $settingsPath -Raw | ConvertFrom-Json
     $settings | Add-Member -NotePropertyName env -NotePropertyValue $activeEnv -Force
-    $settings | ConvertTo-Json -Depth 20 | Set-Content -Path $settingsPath -Encoding utf8
+    $settings | ConvertTo-Json -Depth 20 | Set-Content -Path $settingsPath -Encoding utf8NoBOM
 
-    Set-Content -Path $statusPath -Value $Profile -Encoding utf8 -NoNewline
+    Set-Content -Path $statusPath -Value $Profile -Encoding utf8NoBOM -NoNewline
 }
 
 function New-DotIcon([string]$Letter, [System.Drawing.Color]$Color) {
