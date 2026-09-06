@@ -58,7 +58,7 @@ function Update-TrayDisplay {
     $p = Get-CurrentProfile
     if ($p -eq "kantor") {
         $notifyIcon.Icon = $iconKantor
-        $notifyIcon.Text = "Claude Gateway: KANTOR (GANTI_DENGAN_URL_GATEWAY_ANDA)"
+        $notifyIcon.Text = "Claude Gateway: KANTOR"
     } else {
         $notifyIcon.Icon = $iconPersonal
         $notifyIcon.Text = "Claude Gateway: PERSONAL (akun Pro)"

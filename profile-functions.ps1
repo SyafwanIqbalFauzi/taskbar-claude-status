@@ -26,7 +26,7 @@ function claude-switch-profile {
     Set-Content -Path "$HOME\.claude\gateway-status.txt" -Value $Profile -Encoding utf8NoBOM -NoNewline
 
     if ($Profile -eq "kantor") {
-        Write-Host "Claude Code -> KANTOR gateway (GANTI_DENGAN_URL_GATEWAY_ANDA) [settings.json diperbarui]" -ForegroundColor Yellow
+        Write-Host "Claude Code -> KANTOR gateway [settings.json diperbarui]" -ForegroundColor Yellow
     } else {
         Write-Host "Claude Code -> PERSONAL (akun Pro / login default) [settings.json diperbarui]" -ForegroundColor Green
     }

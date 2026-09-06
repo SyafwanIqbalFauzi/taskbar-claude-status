@@ -66,7 +66,7 @@ proses sendiri dan lebih konsisten dikenali oleh Windows.
 ## Pemakaian
 
 ```powershell
-claude-switch-kantor    # pindah ke gateway kantor (GANTI_DENGAN_URL_GATEWAY_ANDA)
+claude-switch-kantor    # pindah ke gateway kantor
 claude-switch-personal  # kembali ke akun Claude Pro pribadi
 ```
 
