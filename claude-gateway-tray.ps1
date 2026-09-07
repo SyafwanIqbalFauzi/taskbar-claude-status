@@ -6,6 +6,10 @@ $profilesPath = "$HOME\.claude\env-profiles.json"
 $settingsPath = "$HOME\.claude\settings.json"
 $script:lastProfile = $null
 
+function Write-Utf8NoBom([string]$Path, [string]$Content) {
+    [System.IO.File]::WriteAllText($Path, $Content, (New-Object System.Text.UTF8Encoding($false)))
+}
+
 function Get-CurrentProfile {
     if (Test-Path $statusPath) {
         $p = (Get-Content $statusPath -Raw).Trim()
@@ -20,9 +24,9 @@ function Set-ActiveProfile([string]$Profile) {
 
     $settings = Get-Content $settingsPath -Raw | ConvertFrom-Json
     $settings | Add-Member -NotePropertyName env -NotePropertyValue $activeEnv -Force
-    $settings | ConvertTo-Json -Depth 20 | Set-Content -Path $settingsPath -Encoding utf8NoBOM
+    Write-Utf8NoBom -Path $settingsPath -Content ($settings | ConvertTo-Json -Depth 20)
 
-    Set-Content -Path $statusPath -Value $Profile -Encoding utf8NoBOM -NoNewline
+    Write-Utf8NoBom -Path $statusPath -Content $Profile
 }
 
 function New-DotIcon([string]$Letter, [System.Drawing.Color]$Color) {

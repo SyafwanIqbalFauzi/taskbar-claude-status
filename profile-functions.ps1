@@ -1,6 +1,10 @@
 # Tambahkan isi file ini ke PowerShell profile Anda ($PROFILE)
 # untuk perintah claude-switch-kantor / claude-switch-personal.
 
+function Write-Utf8NoBom([string]$Path, [string]$Content) {
+    [System.IO.File]::WriteAllText($Path, $Content, (New-Object System.Text.UTF8Encoding($false)))
+}
+
 function claude-switch-profile {
     param([Parameter(Mandatory)][ValidateSet("kantor","personal")][string]$Profile)
 
@@ -13,7 +17,7 @@ function claude-switch-profile {
     $settings = Get-Content $settingsPath -Raw | ConvertFrom-Json
     $settings | Add-Member -NotePropertyName env -NotePropertyValue $activeEnv -Force
 
-    $settings | ConvertTo-Json -Depth 20 | Set-Content -Path $settingsPath -Encoding utf8NoBOM
+    Write-Utf8NoBom -Path $settingsPath -Content ($settings | ConvertTo-Json -Depth 20)
 
     # Juga di-mirror ke sesi terminal aktif supaya `claude` langsung memakainya tanpa restart
     "ANTHROPIC_BASE_URL","ANTHROPIC_AUTH_TOKEN","CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY" | ForEach-Object {
@@ -23,7 +27,7 @@ function claude-switch-profile {
         Set-Item "Env:$($prop.Name)" $prop.Value
     }
 
-    Set-Content -Path "$HOME\.claude\gateway-status.txt" -Value $Profile -Encoding utf8NoBOM -NoNewline
+    Write-Utf8NoBom -Path "$HOME\.claude\gateway-status.txt" -Content $Profile
 
     if ($Profile -eq "kantor") {
         Write-Host "Claude Code -> KANTOR gateway [settings.json diperbarui]" -ForegroundColor Yellow
