@@ -1,2 +1,8 @@
 # Jangan pernah commit profil env yang berisi token asli
 env-profiles.json
+*.bak
+*.tmp
+gateway-switch.log
+
+# Hasil build
+*.exe

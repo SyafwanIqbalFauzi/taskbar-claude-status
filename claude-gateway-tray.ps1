@@ -1,32 +1,28 @@
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
-$statusPath   = "$HOME\.claude\gateway-status.txt"
-$profilesPath = "$HOME\.claude\env-profiles.json"
-$settingsPath = "$HOME\.claude\settings.json"
+# Logika bersama. Saat dijalankan sebagai .ps1 ia di-dot-source; build.ps1
+# mengganti baris ini dengan isi common.ps1 agar .exe berdiri sendiri.
+. (Join-Path $PSScriptRoot "common.ps1")  # @@INCLUDE-COMMON@@
+
 $script:lastProfile = $null
 
-function Write-Utf8NoBom([string]$Path, [string]$Content) {
-    [System.IO.File]::WriteAllText($Path, $Content, (New-Object System.Text.UTF8Encoding($false)))
-}
+# Hanya satu instance tray.
+$script:mutex = New-Object System.Threading.Mutex($false, "Local\taskbar-claude-status")
+if (-not $script:mutex.WaitOne(0)) { return }
 
-function Get-CurrentProfile {
-    if (Test-Path $statusPath) {
-        $p = (Get-Content $statusPath -Raw).Trim()
-        if ($p -eq "kantor" -or $p -eq "personal") { return $p }
+function Switch-Profile([string]$Profile) {
+    try {
+        $result = Set-ActiveProfile $Profile
+        $label = $Profile.ToUpper()
+        $text = "Claude Code -> $label"
+        if ($result.Hermes) { $text += "`n" + $result.Hermes }
+        $notifyIcon.ShowBalloonTip(2500, "Claude Gateway", $text, [System.Windows.Forms.ToolTipIcon]::Info)
+    } catch {
+        Write-SwitchLog "GAGAL switch ke '$Profile': $($_.Exception.Message)"
+        $notifyIcon.ShowBalloonTip(5000, "Gagal pindah profil", $_.Exception.Message, [System.Windows.Forms.ToolTipIcon]::Error)
     }
-    return "personal"
-}
-
-function Set-ActiveProfile([string]$Profile) {
-    $profiles = Get-Content $profilesPath -Raw | ConvertFrom-Json
-    $activeEnv = $profiles.$Profile
-
-    $settings = Get-Content $settingsPath -Raw | ConvertFrom-Json
-    $settings | Add-Member -NotePropertyName env -NotePropertyValue $activeEnv -Force
-    Write-Utf8NoBom -Path $settingsPath -Content ($settings | ConvertTo-Json -Depth 20)
-
-    Write-Utf8NoBom -Path $statusPath -Content $Profile
+    Update-TrayDisplay
 }
 
 function New-DotIcon([string]$Letter, [System.Drawing.Color]$Color) {
@@ -72,9 +68,15 @@ function Update-TrayDisplay {
     $script:lastProfile = $p
 }
 
-$itemKantor.Add_Click({ Set-ActiveProfile "kantor"; Update-TrayDisplay })
-$itemPersonal.Add_Click({ Set-ActiveProfile "personal"; Update-TrayDisplay })
-$itemExit.Add_Click({ $timer.Stop(); $notifyIcon.Visible = $false; [System.Windows.Forms.Application]::Exit() })
+$itemKantor.Add_Click({ Switch-Profile "kantor" })
+$itemPersonal.Add_Click({ Switch-Profile "personal" })
+$itemExit.Add_Click({
+    $timer.Stop()
+    $notifyIcon.Visible = $false
+    $notifyIcon.Dispose()
+    $script:mutex.ReleaseMutex()
+    [System.Windows.Forms.Application]::Exit()
+})
 
 Update-TrayDisplay
 
