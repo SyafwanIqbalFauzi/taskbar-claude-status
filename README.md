@@ -48,8 +48,9 @@ Kenapa bukan `ANTHROPIC_TOKEN`: dengan provider `anthropic` + `ANTHROPIC_TOKEN`,
 request ke gateway ditolak 401 saat diuji. Jalur `custom` sudah diuji
 end-to-end. Opsi lain: `hermesTokenVar`, `hermesHome`, `hermesPersonalProvider`.
 
-Sesi Hermes yang sudah berjalan kemungkinan tidak ikut berpindah (belum diuji);
-mulai sesi baru setelah switch.
+**Sesi Hermes yang sudah berjalan tidak ikut berpindah** (sudah diuji): Hermes membaca
+provider saat sesi dimulai, jadi sesi lama tetap memakai akun/gateway sebelumnya
+dan biayanya tetap ke sana. Mulai sesi baru setelah switch.
 
 ## Perilaku
 
